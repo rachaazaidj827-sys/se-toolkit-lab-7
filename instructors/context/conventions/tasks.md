@@ -418,7 +418,7 @@ Steps that involve infrastructure or environment-dependent operations (`Docker`,
 Key rules:
 
 - **Place after the checkpoint.** The troubleshooting block follows the "You should see…" checkpoint, because students only need it when the checkpoint fails.
-- **Use the summary `Troubleshooting`.** This keeps a consistent label that students learn to look for.
+- **Use the summary `<b>Troubleshooting (click to open)</b>`.** Bold text makes the block easy to spot in long pages. The parenthetical tells students the block is interactive.
 - **Use `<h4>` for each symptom.** Start each entry with an `<h4>` tag containing the symptom (what the student sees), then the fix. `<h4>` renders as a visible heading but stays out of the auto-generated ToC — the same pattern used for Time, Purpose, and Context in the task template.
 - **Keep it brief.** Cover only the 2–3 most common failures per block. Rare edge cases can still go to the TA.
 - **Link to wiki instead of duplicating.** When a fix involves a reusable tool operation (e.g., stopping a process, restarting a service), link to the relevant wiki section rather than re-explaining the steps inline.
@@ -431,7 +431,7 @@ Good:
 
    You should see all containers running.
 
-   <details><summary>Troubleshooting</summary>
+   <details><summary><b>Troubleshooting (click to open)</b></summary>
 
    <h4>Port conflict (<code>port is already allocated</code>)</h4>
 
