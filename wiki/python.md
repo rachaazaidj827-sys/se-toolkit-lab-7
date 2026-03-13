@@ -7,9 +7,9 @@
   - [Code blocks](#code-blocks)
   - [Documentation](#documentation)
   - [Docstring](#docstring)
-- [`uv`](#uv)
-  - [Install `uv`](#install-uv)
-- [Set up `Python` in `VS Code`](./vscode-python.md)
+- [Package managers](#package-managers)
+  - [`uv`](#uv)
+    - [Install `uv`](#install-uv)
 - [Quality assurance tools](#quality-assurance-tools)
   - [Dynamic analysis tools](#dynamic-analysis-tools)
     - [The `assert` statement](#the-assert-statement)
@@ -55,11 +55,19 @@ def greet(name):
     return f"Hello, {name}!"
 ```
 
-## `uv`
+## Package managers
+
+- [`uv`](#uv)
+
+Docs:
+
+- [Package manager](./package-manager.md#what-is-a-package-manager)
+
+### `uv`
 
 `uv` is a modern package manager for [`Python`](#what-is-python).
 
-### Install `uv`
+#### Install `uv`
 
 1. [Check the current shell in the `VS Code Terminal`](./vs-code.md#check-the-current-shell-in-the-vs-code-terminal).
 
