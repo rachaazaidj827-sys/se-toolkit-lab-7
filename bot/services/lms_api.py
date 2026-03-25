@@ -88,6 +88,99 @@ class LmsApiService:
         except Exception as e:
             raise LmsApiError(f"unexpected error: {str(e)}")
 
+    def get_learners(self) -> list:
+        """Fetch enrolled learners."""
+        try:
+            response = self._client.get("/learners/")
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def get_scores(self, lab: str) -> list:
+        """Fetch score distribution for a lab."""
+        try:
+            response = self._client.get("/analytics/scores", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def get_timeline(self, lab: str) -> list:
+        """Fetch submission timeline for a lab."""
+        try:
+            response = self._client.get("/analytics/timeline", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def get_groups(self, lab: str) -> list:
+        """Fetch per-group performance for a lab."""
+        try:
+            response = self._client.get("/analytics/groups", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def get_top_learners(self, lab: str, limit: int = 5) -> list:
+        """Fetch top learners for a lab."""
+        try:
+            response = self._client.get(
+                "/analytics/top-learners", params={"lab": lab, "limit": limit}
+            )
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def get_completion_rate(self, lab: str) -> dict:
+        """Fetch completion rate for a lab."""
+        try:
+            response = self._client.get("/analytics/completion-rate", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
+    def trigger_sync(self) -> dict:
+        """Trigger ETL pipeline sync."""
+        try:
+            response = self._client.post("/pipeline/sync", json={})
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            raise LmsApiError(f"HTTP {e.response.status_code}: {e.response.text}")
+        except httpx.ConnectError as e:
+            raise LmsApiError(f"connection refused ({self.base_url}).")
+        except Exception as e:
+            raise LmsApiError(f"unexpected error: {str(e)}")
+
 
 class LmsApiError(Exception):
     """Custom exception for LMS API errors."""
