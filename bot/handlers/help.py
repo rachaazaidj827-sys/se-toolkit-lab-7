@@ -8,11 +8,11 @@ def handle_help(user_input: str = "") -> str:
         user_input: Optional input from user (unused for /help).
 
     Returns:
-        List of available commands.
+        List of available commands with descriptions.
     """
     return """Available commands:
 /start - Welcome message
 /help - Show this help message
 /health - Check backend status
 /labs - List available labs
-/scores - View your scores"""
+/scores <lab> - View scores for a specific lab (e.g., /scores lab-04)"""
