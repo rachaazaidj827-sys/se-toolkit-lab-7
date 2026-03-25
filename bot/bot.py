@@ -49,8 +49,8 @@ def run_test_mode(command: str) -> None:
     """
     handler = get_handler(command)
     if handler is None:
-        print(f"Unknown command: {command}")
-        sys.exit(1)
+        print(f"Unknown command: {command}. Use /help to see available commands.")
+        sys.exit(0)
 
     # Extract arguments if present (for /scores)
     parts = command.split(maxsplit=1)
