@@ -91,3 +91,123 @@ By the end of this lab, you should be able to say:
 2. [Backend Integration](./lab/tasks/required/task-2.md) — P0: slash commands + real data
 3. [Intent-Based Natural Language Routing](./lab/tasks/required/task-3.md) — P1: LLM tool use
 4. [Containerize and Document](./lab/tasks/required/task-4.md) — P3: containerize + deploy
+
+## Deploy
+
+This section explains how to deploy the Telegram bot alongside the LMS backend on your VM.
+
+### Prerequisites
+
+Before deploying, ensure you have:
+
+1. **VM access** — SSH access to your university VM
+2. **Telegram bot token** — Get from [@BotFather](https://t.me/BotFather) with `/newbot`
+3. **LLM API access** — Qwen Code API running on your VM (see setup step 1.9)
+4. **Environment files** — `.env.docker.secret` with all required variables
+
+### Environment variables
+
+The bot requires these variables in `.env.docker.secret`:
+
+```text
+# Telegram Bot
+BOT_TOKEN=123456789:ABCdefGhIJKlmNoPQRsTUVwxyz
+
+# LMS API (inside Docker, use service name not localhost)
+LMS_API_BASE_URL=http://backend:8000
+LMS_API_KEY=my-secret-api-key
+
+# LLM API (use host.docker.internal for cross-network access)
+LLM_API_KEY=my-qwen-api-key
+LLM_API_BASE_URL=http://host.docker.internal:42005/v1
+LLM_API_MODEL=coder-model
+```
+
+> **Important**: Inside Docker, `localhost` refers to the container itself. Use `http://backend:8000` to reach the backend service, and `host.docker.internal` to reach services on the VM host (like the Qwen Code API).
+
+### Deploy steps
+
+1. **Clone your fork on the VM** (if not already done):
+   ```terminal
+   git clone https://github.com/YOUR_USERNAME/se-toolkit-lab-7 ~/se-toolkit-lab-7
+   cd ~/se-toolkit-lab-7
+   ```
+
+2. **Create environment files**:
+   ```terminal
+   cp .env.docker.example .env.docker.secret
+   nano .env.docker.secret  # Fill in all values
+   ```
+
+3. **Start all services with Docker Compose**:
+   ```terminal
+   docker compose --env-file .env.docker.secret up --build -d
+   ```
+
+4. **Verify services are running**:
+   ```terminal
+   docker compose --env-file .env.docker.secret ps
+   ```
+   
+   You should see:
+   ```
+   NAME                STATUS
+   backend             Up
+   bot                 Up
+   caddy               Up
+   postgres            Up (healthy)
+   pgadmin             Up
+   ```
+
+5. **Populate the database** (if not already done):
+   ```terminal
+   curl -X POST http://localhost:42002/pipeline/sync \
+     -H "Authorization: Bearer my-secret-api-key" \
+     -H "Content-Type: application/json" \
+     -d '{}'
+   ```
+
+### Verify deployment
+
+1. **Check bot container logs**:
+   ```terminal
+   docker compose --env-file .env.docker.secret logs bot --tail 20
+   ```
+   
+   Look for:
+   - "Application started" — bot connected to Telegram
+   - "HTTP Request: POST .../getUpdates" — bot is polling
+
+2. **Test in Telegram**:
+   - Send `/start` — should see welcome message with inline buttons
+   - Send `/health` — should see backend status
+   - Send "what labs are available?" — should list labs from backend
+   - Send "which lab has the lowest pass rate?" — should analyze and respond
+
+3. **Check backend is healthy**:
+   ```terminal
+   curl -sf http://localhost:42002/docs
+   ```
+
+### Troubleshooting
+
+| Symptom | Solution |
+|---------|----------|
+| Bot container keeps restarting | Check logs: `docker compose logs bot`. Usually missing env var or import error. |
+| `/health` fails in container | `LMS_API_BASE_URL` must be `http://backend:8000` (not `localhost:42002`). |
+| LLM queries fail | `LLM_API_BASE_URL` must use `host.docker.internal` (not `localhost`). |
+| "BOT_TOKEN is required" | Ensure `BOT_TOKEN` is set in `.env.docker.secret`. |
+| Build fails at `uv sync` | Ensure `uv.lock` is copied in Dockerfile. |
+
+### Stop and restart
+
+```terminal
+# Stop all services
+docker compose --env-file .env.docker.secret down
+
+# Restart bot only
+docker compose --env-file .env.docker.secret restart bot
+
+# Rebuild and restart after code changes
+docker compose --env-file .env.docker.secret up --build -d
+```
