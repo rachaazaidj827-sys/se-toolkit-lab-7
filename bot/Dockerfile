@@ -38,5 +38,5 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Set working directory for bot
 WORKDIR /app/bot
 
-# Run the bot
-CMD ["uv", "run", "bot.py"]
+# Run the bot directly using Python from venv
+CMD ["python", "bot.py"]
